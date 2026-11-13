@@ -1042,3 +1042,8 @@ input[type="date"] {
     grid-template-columns: 1fr;
   }
 }
+
+/* Ocultar los días cuando se selecciona Campus completo */
+#campus_dias_box[hidden] {
+  display: none !important;
+}
