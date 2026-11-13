@@ -1544,6 +1544,34 @@ function actualizarDiasCampus() {
         }
       });
     }
+    let campusEnviando = false;
+
+const campusForm = document.getElementById("formCampus");
+const campusIframe = document.getElementById("campus_iframe");
+
+if (campusForm && campusIframe) {
+
+  campusForm.addEventListener("submit", function () {
+    campusEnviando = true;
+  });
+
+  campusIframe.addEventListener("load", function () {
+
+    if (!campusEnviando) return;
+
+    campusEnviando = false;
+
+    alert("🎄 ¡Inscripción hecha correctamente! 🎄");
+
+    campusForm.reset();
+
+    if (typeof actualizarDiasCampus === "function") {
+      actualizarDiasCampus();
+    }
+
+  });
+
+}
 
     // Gestión del formulario sin recarga
     const form = document.getElementById('formInscripcion');
