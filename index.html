@@ -1000,6 +1000,189 @@
   </div>
 </div>
 
+
+<!-- FORMULARIO CAMPUS DE NAVIDAD 2026 -->
+<div id="modal-campus" class="modal-overlay">
+  <div class="modal-content modal-form">
+
+    <button class="modal-close" type="button"
+      onclick="closeModal('modal-campus')">&times;</button>
+
+    <div class="form-header">
+      <span class="badge-butter">Navidad 2026</span>
+      <h2>Inscripción al Campus de Navidad</h2>
+      <p>Completa los datos para reservar tu plaza en el Campus de Navidad de Danza Castalla.</p>
+    </div>
+
+    <form id="formCampus"
+      action="https://script.google.com/macros/s/AKfycbyjT0ssA6pkwalnEr9npAEXg0hPdKUCvhWNE3D6q9Io3dv3TAEAycocJ0IwbgxYOEfp/exec"
+      method="POST"
+      class="form-grid">
+
+      <div class="form-section-title">1. Datos del Alumno/a</div>
+
+      <div class="form-group full-width">
+        <label for="campus_nombre">Nombre y Apellidos del alumno/a *</label>
+        <input type="text" id="campus_nombre" name="Nombre_Alumno"
+          placeholder="Nombre y apellidos" required>
+      </div>
+
+      <div class="form-group">
+        <label for="campus_dni">DNI / NIA del alumno/a *</label>
+        <input type="text" id="campus_dni" name="DNI_NIA_Alumno"
+          placeholder="DNI o NIA" required>
+      </div>
+
+      <div class="form-group">
+        <label for="campus_fecha">Fecha de nacimiento *</label>
+        <input type="date" id="campus_fecha" name="Fecha_Nacimiento"
+          onchange="calcularEdadCampus()" required>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="campus_edad">Edad *</label>
+        <input type="number" id="campus_edad" name="Edad"
+          min="3" max="17" placeholder="Edad del participante"
+          readonly required>
+        <small>La edad se calculará automáticamente a partir de la fecha de nacimiento.</small>
+      </div>
+
+      <div class="form-section-title">2. Datos de Madre / Padre / Tutor/a</div>
+
+      <div class="form-group full-width">
+        <label for="campus_tutor">Nombre y Apellidos del Tutor/a *</label>
+        <input type="text" id="campus_tutor" name="Nombre_Tutor"
+          placeholder="Nombre y apellidos" required>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="campus_dni_tutor">DNI / NIE del Tutor/a Legal *</label>
+        <input type="text" id="campus_dni_tutor" name="DNI_Tutor"
+          placeholder="DNI o NIE" required>
+      </div>
+
+      <div class="form-group">
+        <label for="campus_email">Correo electrónico *</label>
+        <input type="email" id="campus_email" name="Email_Contacto"
+          placeholder="ejemplo@correo.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="campus_telefono">Teléfono / WhatsApp *</label>
+        <input type="tel" id="campus_telefono" name="Telefono_Contacto"
+          placeholder="600 000 000" required>
+      </div>
+
+      <div class="form-section-title">3. Días de asistencia e inscripción</div>
+
+      <div class="form-group full-width">
+        <label for="campus_modalidad">Modalidad de inscripción *</label>
+        <select id="campus_modalidad" name="Modalidad_Inscripcion"
+          onchange="actualizarDiasCampus()" required>
+          <option value="">-- Selecciona una opción --</option>
+          <option value="Campus completo">Campus completo · 3 días · 45 €</option>
+          <option value="Días sueltos">Días sueltos · 18 € por día</option>
+        </select>
+      </div>
+
+      <div class="form-group full-width" id="campus_dias_box" hidden>
+        <label><strong>Selecciona los días que deseas asistir *</strong></label>
+
+        <div class="radio-options-group">
+          <label class="radio-option">
+            <input type="checkbox" name="Dia_28" value="Sí">
+            <span>28 de diciembre</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="checkbox" name="Dia_29" value="Sí">
+            <span>29 de diciembre</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="checkbox" name="Dia_30" value="Sí">
+            <span>30 de diciembre</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <div class="schedule-info-box">
+          <strong>Horario:</strong> de 9:00 a 13:00 h<br>
+          <strong>Ubicación:</strong> Polideportivo de Castalla<br>
+          <strong>Fechas:</strong> 28, 29 y 30 de diciembre de 2026
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <div class="schedule-info-box" id="campus_precio">
+          Selecciona la modalidad para consultar el importe.
+        </div>
+      </div>
+
+      <div class="form-section-title">4. Salud e información adicional</div>
+
+      <div class="form-group full-width">
+        <label for="campus_alergias">
+          ¿Alguna lesión, alergia o necesidad especial que debamos conocer?
+        </label>
+        <textarea id="campus_alergias" name="Alergias_Necesidades"
+          rows="3" placeholder="Indica cualquier información importante o escribe 'Ninguna'."></textarea>
+      </div>
+
+      <div class="form-group full-width">
+        <label for="campus_observaciones">Observaciones</label>
+        <textarea id="campus_observaciones" name="Observaciones"
+          rows="2" placeholder="Cualquier otra información que quieras comunicarnos."></textarea>
+      </div>
+
+      <div class="form-section-title">5. Autorización de imagen y protección de datos</div>
+
+      <div class="form-group full-width">
+        <label><strong>¿Autoriza el uso de imagen? *</strong></label>
+
+        <div class="legal-box">
+          Como padre, madre o tutor/a legal, autorizo a Escuelas Deportivas
+          Danza Castalla a realizar fotografías y vídeos del/de la participante
+          durante el Campus de Navidad y a utilizarlos para la difusión de
+          sus actividades en sus canales oficiales, de acuerdo con la
+          información facilitada por la organización.
+        </div>
+
+        <div class="radio-options-group">
+          <label class="radio-option">
+            <input type="radio" name="Autorizacion_Imagen"
+              value="Sí, autorizo" required>
+            <span>Sí, autorizo</span>
+          </label>
+
+          <label class="radio-option">
+            <input type="radio" name="Autorizacion_Imagen"
+              value="No autorizo" required>
+            <span>No autorizo</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-group full-width">
+        <label class="radio-option">
+          <input type="checkbox" name="Aceptacion_Privacidad"
+            value="Acepto" required>
+          <span>He leído y acepto la información sobre protección de datos y el tratamiento de los datos necesarios para gestionar esta inscripción. *</span>
+        </label>
+      </div>
+
+      <div class="form-group full-width">
+        <button type="submit" class="btn-primary btn-full">
+          Completar inscripción al Campus
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>
+
+  
 <!-- SECCIÓN GALERÍA POR CARPETAS CON DRIVE -->
 <section id="galeria" class="section bg-light">
   <div class="section-header">
