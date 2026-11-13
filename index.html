@@ -1400,21 +1400,27 @@
   }
 
   // ACTUALIZAR DÍAS DEL CAMPUS
-  function actualizarDiasCampus() {
-    const modalidad = document.getElementById('campus_modalidad').value;
-    const cajaDias = document.getElementById('campus_dias_box');
-    const checks = document.querySelectorAll(
-      '#campus_dias_box input[type="checkbox"]'
-    );
+  
+function actualizarDiasCampus() {
+  const modalidad = document.getElementById('campus_modalidad').value;
+  const cajaDias = document.getElementById('campus_dias_box');
+  const checks = document.querySelectorAll(
+    '#campus_dias_box input[type="checkbox"]'
+  );
 
-    cajaDias.hidden = modalidad !== 'Días sueltos';
+  if (modalidad === 'Días sueltos') {
+    cajaDias.hidden = false;
+  } else {
+    cajaDias.hidden = true;
 
-    if (modalidad !== 'Días sueltos') {
-      checks.forEach(check => check.checked = false);
-    }
-
-    actualizarPrecioCampus();
+    // Limpiar los días seleccionados al cambiar de modalidad
+    checks.forEach(check => {
+      check.checked = false;
+    });
   }
+
+  actualizarPrecioCampus();
+}
 
   // CALCULAR PRECIO DEL CAMPUS
   function actualizarPrecioCampus() {
@@ -1477,7 +1483,7 @@
   }
 
 </script>
-
+  <script>
     // Cambio de pestañas en el Calendario
     function showDay(dayId, btn) {
       const allSchedules = document.querySelectorAll('.day-schedule');
