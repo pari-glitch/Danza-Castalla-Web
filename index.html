@@ -1328,27 +1328,155 @@
     <p>© 2026 Danza Castalla. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- Scripts JavaScript -->
-  <script>
-    function openModal(id) {
-      document.getElementById(id).classList.add('active');
+  
+<!-- Scripts JavaScript -->
+<script>
+
+  // ABRIR VENTANAS Y FORMULARIOS
+  function openModal(id) {
+    const modal = document.getElementById(id);
+
+    if (!modal) {
+      console.error("No se encuentra el formulario:", id);
+      alert("No se ha encontrado el formulario de inscripción. Comprueba su configuración.");
+      return;
     }
 
-    function closeModal(id) {
-      document.getElementById(id).classList.remove('active');
+    modal.classList.add('active');
+  }
+
+  // CERRAR VENTANAS Y FORMULARIOS
+  function closeModal(id) {
+    const modal = document.getElementById(id);
+
+    if (!modal) {
+      console.error("No se encuentra el formulario:", id);
+      return;
     }
 
-    function openInscriptionModal(disciplinaNombre) {
-      closeModal('modal-ritmica');
-      closeModal('modal-moderno');
+    modal.classList.remove('active');
+  }
 
-      const selectElement = document.getElementById('disciplina');
-      if (selectElement && disciplinaNombre) {
-        selectElement.value = disciplinaNombre;
+  // ABRIR FORMULARIO ANUAL DESDE UNA DISCIPLINA
+  function openInscriptionModal(disciplinaNombre) {
+    closeModal('modal-ritmica');
+    closeModal('modal-moderno');
+
+    const selectElement = document.getElementById('disciplina');
+
+    if (selectElement && disciplinaNombre) {
+      selectElement.value = disciplinaNombre;
+    }
+
+    openModal('modal-inscripcion');
+  }
+
+  // ACTUALIZAR EDAD DEL PARTICIPANTE DEL CAMPUS
+  function calcularEdadCampus() {
+    const fecha = document.getElementById('campus_fecha').value;
+    const campoEdad = document.getElementById('campus_edad');
+
+    if (!fecha) {
+      campoEdad.value = '';
+      return;
+    }
+
+    const nacimiento = new Date(fecha + 'T00:00:00');
+    const hoy = new Date();
+
+    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+    if (
+      hoy.getMonth() < nacimiento.getMonth() ||
+      (
+        hoy.getMonth() === nacimiento.getMonth() &&
+        hoy.getDate() < nacimiento.getDate()
+      )
+    ) {
+      edad--;
+    }
+
+    campoEdad.value = edad;
+  }
+
+  // ACTUALIZAR DÍAS DEL CAMPUS
+  function actualizarDiasCampus() {
+    const modalidad = document.getElementById('campus_modalidad').value;
+    const cajaDias = document.getElementById('campus_dias_box');
+    const checks = document.querySelectorAll(
+      '#campus_dias_box input[type="checkbox"]'
+    );
+
+    cajaDias.hidden = modalidad !== 'Días sueltos';
+
+    if (modalidad !== 'Días sueltos') {
+      checks.forEach(check => check.checked = false);
+    }
+
+    actualizarPrecioCampus();
+  }
+
+  // CALCULAR PRECIO DEL CAMPUS
+  function actualizarPrecioCampus() {
+    const modalidad = document.getElementById('campus_modalidad').value;
+    const precio = document.getElementById('campus_precio');
+
+    const checks = document.querySelectorAll(
+      '#campus_dias_box input[type="checkbox"]'
+    );
+
+    if (modalidad === 'Campus completo') {
+      precio.innerHTML = '<strong>Importe total: 45 €</strong> · Tres días';
+    } else if (modalidad === 'Días sueltos') {
+      const seleccionados = Array.from(checks)
+        .filter(check => check.checked).length;
+
+      if (seleccionados === 0) {
+        precio.textContent =
+          'Selecciona al menos un día. Precio: 18 € por día.';
+      } else {
+        precio.innerHTML =
+          '<strong>Importe total: ' + (seleccionados * 18) +
+          ' €</strong> · ' + seleccionados + ' día(s)';
       }
-
-      openModal('modal-inscripcion');
+    } else {
+      precio.textContent =
+        'Selecciona la modalidad para consultar el importe.';
     }
+  }
+
+  // CAMBIAR PRECIO AL SELECCIONAR DÍAS
+  document.addEventListener('change', function(event) {
+    if (
+      event.target.matches(
+        '#campus_dias_box input[type="checkbox"]'
+      )
+    ) {
+      actualizarPrecioCampus();
+    }
+  });
+
+  // CAMBIAR PESTAÑAS DE HORARIOS
+  function switchSchedule(type, btnElement) {
+    document.querySelectorAll('.schedule-container')
+      .forEach(el => el.classList.remove('active'));
+
+    document.querySelectorAll('.tab-btn')
+      .forEach(el => el.classList.remove('active'));
+
+    const targetSchedule =
+      document.getElementById('schedule-' + type);
+
+    if (targetSchedule) {
+      targetSchedule.classList.add('active');
+    }
+
+    if (btnElement) {
+      btnElement.classList.add('active');
+    }
+  }
+
+</script>
 
     // Cambio de pestañas en el Calendario
     function showDay(dayId, btn) {
