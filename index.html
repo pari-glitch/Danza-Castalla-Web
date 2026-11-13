@@ -376,6 +376,58 @@
       font-weight: 600 !important;
       margin: 0 !important;
     }
+
+
+    /* AVISO NAVIDEÑO DE INSCRIPCIÓN DEL CAMPUS */
+    #campus_exito {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: rgba(0, 0, 0, 0.65);
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    #campus_exito.visible { display: flex; }
+
+    .campus-exito-caja {
+      background: #fffdf5;
+      border-radius: 22px;
+      padding: 35px 25px;
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 15px 45px rgba(0,0,0,.25);
+      border: 2px solid #e8c96b;
+    }
+
+    .campus-exito-caja .arbol {
+      font-size: 55px;
+      margin-bottom: 12px;
+    }
+
+    .campus-exito-caja h2 {
+      color: #245b3b;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+    }
+
+    .campus-exito-caja p {
+      color: #555;
+      margin-bottom: 22px;
+    }
+
+    .campus-exito-caja button {
+      background: #245b3b;
+      color: white;
+      border: none;
+      border-radius: 25px;
+      padding: 13px 22px;
+      font-weight: 700;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body id="top">
@@ -1184,6 +1236,17 @@
   id="campus_iframe"
   style="display:none;">
 </iframe>
+
+    <!-- VENTANA DE CONFIRMACIÓN DEL CAMPUS -->
+    <div id="campus_exito" role="dialog" aria-modal="true" aria-labelledby="campus_exito_titulo">
+      <div class="campus-exito-caja">
+        <div class="arbol">🎄</div>
+        <h2 id="campus_exito_titulo">¡Inscripción hecha correctamente!</h2>
+        <p>Hemos recibido la solicitud del Campus de Navidad de Danza Castalla.</p>
+        <div class="arbol">🎄</div>
+        <button type="button" onclick="cerrarExitoCampus()">Hacer otra inscripción</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1549,34 +1612,39 @@ function actualizarDiasCampus() {
         }
       });
     }
+    // CONFIRMACIÓN VISUAL DEL FORMULARIO DEL CAMPUS
     let campusEnviando = false;
 
-const campusForm = document.getElementById("formCampus");
-const campusIframe = document.getElementById("campus_iframe");
+    const campusForm = document.getElementById("formCampus");
+    const campusIframe = document.getElementById("campus_iframe");
+    const campusExito = document.getElementById("campus_exito");
 
-if (campusForm && campusIframe) {
+    if (campusForm && campusIframe && campusExito) {
+      campusForm.addEventListener("submit", function () {
+        campusEnviando = true;
+      });
 
-  campusForm.addEventListener("submit", function () {
-    campusEnviando = true;
-  });
+      campusIframe.addEventListener("load", function () {
+        if (!campusEnviando) return;
 
-  campusIframe.addEventListener("load", function () {
+        campusEnviando = false;
+        campusForm.reset();
 
-    if (!campusEnviando) return;
+        if (typeof actualizarDiasCampus === "function") {
+          actualizarDiasCampus();
+        }
+        if (typeof actualizarPrecioCampus === "function") {
+          actualizarPrecioCampus();
+        }
 
-    campusEnviando = false;
-
-    alert("🎄 ¡Inscripción hecha correctamente! 🎄");
-
-    campusForm.reset();
-
-    if (typeof actualizarDiasCampus === "function") {
-      actualizarDiasCampus();
+        campusExito.classList.add("visible");
+      });
     }
 
-  });
-
-}
+    function cerrarExitoCampus() {
+      const aviso = document.getElementById("campus_exito");
+      if (aviso) aviso.classList.remove("visible");
+    }
 
     // Gestión del formulario sin recarga
     const form = document.getElementById('formInscripcion');
