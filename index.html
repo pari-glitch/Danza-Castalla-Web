@@ -428,6 +428,12 @@
       font-weight: 700;
       cursor: pointer;
     }
+    /* Ocultar el menú superior en móviles para evitar que se descoloque */
+    @media (max-width: 768px) {
+      .nav {
+        display: none !important;
+      }
+    }
   </style>
 </head>
 <body id="top">
