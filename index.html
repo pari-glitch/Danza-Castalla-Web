@@ -1329,87 +1329,91 @@
   </footer>
 
   
-<!-- Scripts JavaScript -->
+
+<!-- SCRIPTS JAVASCRIPT DANZA CASTALLA -->
 <script>
 
-  // ABRIR VENTANAS Y FORMULARIOS
-  function openModal(id) {
-    const modal = document.getElementById(id);
+// ==========================================
+// 1. ABRIR Y CERRAR VENTANAS
+// ==========================================
 
-    if (!modal) {
-      console.error("No se encuentra el formulario:", id);
-      alert("No se ha encontrado el formulario de inscripción. Comprueba su configuración.");
-      return;
-    }
+function openModal(id) {
+  const modal = document.getElementById(id);
 
-    modal.classList.add('active');
+  if (!modal) {
+    console.error("No se encuentra el formulario:", id);
+    alert("No se ha encontrado el formulario de inscripción.");
+    return;
   }
 
-  // CERRAR VENTANAS Y FORMULARIOS
-  function closeModal(id) {
-    const modal = document.getElementById(id);
+  modal.classList.add('active');
+}
 
-    if (!modal) {
-      console.error("No se encuentra el formulario:", id);
-      return;
-    }
+function closeModal(id) {
+  const modal = document.getElementById(id);
 
-    modal.classList.remove('active');
+  if (!modal) {
+    console.error("No se encuentra el formulario:", id);
+    return;
   }
 
-  // ABRIR FORMULARIO ANUAL DESDE UNA DISCIPLINA
-  function openInscriptionModal(disciplinaNombre) {
-    closeModal('modal-ritmica');
-    closeModal('modal-moderno');
+  modal.classList.remove('active');
+}
 
-    const selectElement = document.getElementById('disciplina');
+function openInscriptionModal(disciplinaNombre) {
+  closeModal('modal-ritmica');
+  closeModal('modal-moderno');
 
-    if (selectElement && disciplinaNombre) {
-      selectElement.value = disciplinaNombre;
-    }
+  const selectElement = document.getElementById('disciplina');
 
-    openModal('modal-inscripcion');
+  if (selectElement && disciplinaNombre) {
+    selectElement.value = disciplinaNombre;
   }
 
-  // ACTUALIZAR EDAD DEL PARTICIPANTE DEL CAMPUS
-  function calcularEdadCampus() {
-    const fecha = document.getElementById('campus_fecha').value;
-    const campoEdad = document.getElementById('campus_edad');
+  openModal('modal-inscripcion');
+}
 
-    if (!fecha) {
-      campoEdad.value = '';
-      return;
-    }
 
-    const nacimiento = new Date(fecha + 'T00:00:00');
-    const hoy = new Date();
+// ==========================================
+// 2. CAMPUS DE NAVIDAD
+// ==========================================
 
-    let edad = hoy.getFullYear() - nacimiento.getFullYear();
+// Calcular edad
+function calcularEdadCampus() {
+  const fecha = document.getElementById('campus_fecha');
+  const campoEdad = document.getElementById('campus_edad');
 
-    if (
-      hoy.getMonth() < nacimiento.getMonth() ||
-      (
-        hoy.getMonth() === nacimiento.getMonth() &&
-        hoy.getDate() < nacimiento.getDate()
-      )
-    ) {
-      edad--;
-    }
-
-    campoEdad.value = edad;
+  if (!fecha || !campoEdad || !fecha.value) {
+    if (campoEdad) campoEdad.value = '';
+    return;
   }
 
-  // ACTUALIZAR DÍAS DEL CAMPUS
-  
+  const nacimiento = new Date(fecha.value + 'T00:00:00');
+  const hoy = new Date();
 
+  let edad = hoy.getFullYear() - nacimiento.getFullYear();
+
+  if (
+    hoy.getMonth() < nacimiento.getMonth() ||
+    (hoy.getMonth() === nacimiento.getMonth() &&
+     hoy.getDate() < nacimiento.getDate())
+  ) {
+    edad--;
+  }
+
+  campoEdad.value = edad;
+}
+
+
+// Mostrar días según modalidad
 function actualizarDiasCampus() {
-  const modalidad = document.getElementById('campus_modalidad').value;
+  const modalidad = document.getElementById('campus_modalidad');
   const cajaDias = document.getElementById('campus_dias_box');
-  const checks = document.querySelectorAll(
-    '#campus_dias_box input[type="checkbox"]'
-  );
 
-  const mostrarDias = modalidad === 'Días sueltos';
+  if (!modalidad || !cajaDias) return;
+
+  const checks = cajaDias.querySelectorAll('input[type="checkbox"]');
+  const mostrarDias = modalidad.value === 'Días sueltos';
 
   cajaDias.hidden = !mostrarDias;
 
@@ -1422,189 +1426,206 @@ function actualizarDiasCampus() {
   actualizarPrecioCampus();
 }
 
-    // Limpiar los días seleccionados al cambiar de modalidad
-    checks.forEach(check => {
-      check.checked = false;
-    });
-  }
 
-  actualizarPrecioCampus();
+// Calcular precio
+function actualizarPrecioCampus() {
+  const modalidad = document.getElementById('campus_modalidad');
+  const precio = document.getElementById('campus_precio');
+
+  if (!modalidad || !precio) return;
+
+  const checks = document.querySelectorAll(
+    '#campus_dias_box input[type="checkbox"]'
+  );
+
+  if (modalidad.value === 'Campus completo') {
+    precio.innerHTML =
+      '<strong>Importe total: 45 €</strong> · Tres días';
+
+  } else if (modalidad.value === 'Días sueltos') {
+    const seleccionados = Array.from(checks)
+      .filter(check => check.checked).length;
+
+    if (seleccionados === 0) {
+      precio.textContent =
+        'Selecciona al menos un día. Precio: 18 € por día.';
+    } else {
+      precio.innerHTML =
+        '<strong>Importe total: ' + (seleccionados * 18) +
+        ' €</strong> · ' + seleccionados + ' día(s)';
+    }
+
+  } else {
+    precio.textContent =
+      'Selecciona la modalidad para consultar el importe.';
+  }
 }
 
-  // CALCULAR PRECIO DEL CAMPUS
-  function actualizarPrecioCampus() {
-    const modalidad = document.getElementById('campus_modalidad').value;
-    const precio = document.getElementById('campus_precio');
 
-    const checks = document.querySelectorAll(
+// Actualizar precio al marcar días
+document.addEventListener('change', function(event) {
+  if (
+    event.target.matches(
       '#campus_dias_box input[type="checkbox"]'
-    );
-
-    if (modalidad === 'Campus completo') {
-      precio.innerHTML = '<strong>Importe total: 45 €</strong> · Tres días';
-    } else if (modalidad === 'Días sueltos') {
-      const seleccionados = Array.from(checks)
-        .filter(check => check.checked).length;
-
-      if (seleccionados === 0) {
-        precio.textContent =
-          'Selecciona al menos un día. Precio: 18 € por día.';
-      } else {
-        precio.innerHTML =
-          '<strong>Importe total: ' + (seleccionados * 18) +
-          ' €</strong> · ' + seleccionados + ' día(s)';
-      }
-    } else {
-      precio.textContent =
-        'Selecciona la modalidad para consultar el importe.';
-    }
+    )
+  ) {
+    actualizarPrecioCampus();
   }
+});
 
-  // CAMBIAR PRECIO AL SELECCIONAR DÍAS
-  document.addEventListener('change', function(event) {
-    if (
-      event.target.matches(
-        '#campus_dias_box input[type="checkbox"]'
-      )
-    ) {
-      actualizarPrecioCampus();
-    }
-  });
 
-  // CAMBIAR PESTAÑAS DE HORARIOS
-  function switchSchedule(type, btnElement) {
-    document.querySelectorAll('.schedule-container')
-      .forEach(el => el.classList.remove('active'));
+// ==========================================
+// 3. ENVÍO DEL CAMPUS SIN SALIR DE LA WEB
+// ==========================================
 
-    document.querySelectorAll('.tab-btn')
-      .forEach(el => el.classList.remove('active'));
+let campusEnviando = false;
 
-    const targetSchedule =
-      document.getElementById('schedule-' + type);
+document.addEventListener('DOMContentLoaded', function() {
 
-    if (targetSchedule) {
-      targetSchedule.classList.add('active');
-    }
+  const formularioCampus = document.getElementById('formCampus');
+  const iframeCampus = document.getElementById('campus_iframe');
+  const confirmacionCampus = document.getElementById('campus_exito');
 
-    if (btnElement) {
-      btnElement.classList.add('active');
-    }
-  }
+  if (formularioCampus && iframeCampus) {
 
-</script>
-  <script>
-    // Cambio de pestañas en el Calendario
-    function showDay(dayId, btn) {
-      const allSchedules = document.querySelectorAll('.day-schedule');
-      allSchedules.forEach(schedule => schedule.classList.remove('active'));
+    formularioCampus.addEventListener('submit', function(event) {
 
-      const allTabs = document.querySelectorAll('.tab-btn');
-      allTabs.forEach(tab => tab.classList.remove('active'));
+      const modalidad = document.getElementById('campus_modalidad');
+      const edad = Number(
+        document.getElementById('campus_edad')?.value
+      );
 
-      document.getElementById('day-' + dayId).classList.add('active');
-      btn.classList.add('active');
-    }
-
-    // Texto legal dinámico
-    function updateLegalText() {
-      const inputTutor = document.getElementById('tutor');
-      const inputDNI = document.getElementById('dni_tutor');
-      const inputAlumno = document.getElementById('nombre');
-
-      const legalTutor = document.getElementById('legal_tutor');
-      const legalDNI = document.getElementById('legal_dni');
-      const legalAlumno = document.getElementById('legal_alumno');
-
-      if (inputTutor && legalTutor) {
-        legalTutor.textContent = inputTutor.value.trim() !== '' ? inputTutor.value : '________________________________________';
+      if (!Number.isInteger(edad) || edad < 3 || edad > 17) {
+        event.preventDefault();
+        alert('El Campus está dirigido a participantes de entre 3 y 17 años.');
+        return;
       }
-      if (inputDNI && legalDNI) {
-        legalDNI.textContent = inputDNI.value.trim() !== '' ? inputDNI.value : '________________';
+
+      if (modalidad && modalidad.value === 'Días sueltos') {
+        const dias = document.querySelectorAll(
+          '#campus_dias_box input[type="checkbox"]:checked'
+        );
+
+        if (dias.length === 0) {
+          event.preventDefault();
+          alert('Debes seleccionar al menos un día.');
+          return;
+        }
       }
-      if (inputAlumno && legalAlumno) {
-        legalAlumno.textContent = inputAlumno.value.trim() !== '' ? inputAlumno.value : '________________________________________';
+
+      if (!modalidad || !modalidad.value) {
+        event.preventDefault();
+        alert('Selecciona una modalidad de inscripción.');
+        return;
       }
-    }
 
-    document.addEventListener('DOMContentLoaded', updateLegalText);
+      campusEnviando = true;
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
+      const boton = formularioCampus.querySelector(
+        'button[type="submit"]'
+      );
 
-    let deferredPrompt;
-    const installBtn = document.getElementById('installAppBtn');
-
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      if (installBtn) installBtn.style.display = 'inline-block';
+      if (boton) {
+        boton.disabled = true;
+        boton.textContent = 'Enviando inscripción...';
+      }
     });
 
-    if (installBtn) {
-      installBtn.addEventListener('click', async () => {
-        if (deferredPrompt) {
-          deferredPrompt.prompt();
-          const { outcome } = await deferredPrompt.userChoice;
-          if (outcome === 'accepted') {
-            installBtn.style.display = 'none';
-          }
-          deferredPrompt = null;
-        }
-      });
-    }
+    iframeCampus.addEventListener('load', function() {
 
-    // Gestión del formulario sin recarga
-    const form = document.getElementById('formInscripcion');
-    const notificacion = document.getElementById('notificacionExito');
+      if (!campusEnviando) return;
 
-    if (form) {
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
+      campusEnviando = false;
 
-        const btnSubmit = form.querySelector('button[type="submit"]');
-        const textoOriginal = btnSubmit.innerHTML;
-        btnSubmit.innerHTML = "Enviando...";
-        btnSubmit.disabled = true;
+      formularioCampus.hidden = true;
 
-        const formData = new FormData(form);
-
-        fetch(form.action, {
-          method: 'POST',
-          body: formData
-        })
-        .then(response => {
-          notificacion.classList.add('show');
-          form.reset();
-
-          if (typeof updateLegalText === 'function') {
-            updateLegalText();
-          }
-
-          setTimeout(() => {
-            notificacion.classList.remove('show');
-          }, 6000);
-        })
-        .catch(error => {
-          alert("Hubo un problema al enviar el formulario. Por favor, inténtalo de nuevo.");
-        })
-        .finally(() => {
-          btnSubmit.innerHTML = textoOriginal;
-          btnSubmit.disabled = false;
-        });
-      });
-    }
-
-    function cerrarNotificacion() {
-      if (notificacion) {
-        notificacion.classList.remove('show');
+      if (confirmacionCampus) {
+        confirmacionCampus.hidden = false;
       }
-    }
-  </script>
-<script>
-// Objeto que mapea exactamente los 'value' de tus <option> con su horario correspondiente
+
+    });
+  }
+
+});
+
+
+// ==========================================
+// 4. PESTAÑAS DE HORARIOS Y CALENDARIO
+// ==========================================
+
+function switchSchedule(type, btnElement) {
+
+  document.querySelectorAll('.schedule-container')
+    .forEach(el => el.classList.remove('active'));
+
+  document.querySelectorAll('.tab-btn')
+    .forEach(el => el.classList.remove('active'));
+
+  const targetSchedule =
+    document.getElementById('schedule-' + type);
+
+  if (targetSchedule) {
+    targetSchedule.classList.add('active');
+  }
+
+  if (btnElement) {
+    btnElement.classList.add('active');
+  }
+}
+
+function showDay(dayId, btn) {
+
+  document.querySelectorAll('.day-schedule')
+    .forEach(schedule => schedule.classList.remove('active'));
+
+  document.querySelectorAll('.tab-btn')
+    .forEach(tab => tab.classList.remove('active'));
+
+  const dia = document.getElementById('day-' + dayId);
+
+  if (dia) dia.classList.add('active');
+
+  if (btn) btn.classList.add('active');
+}
+
+
+// ==========================================
+// 5. TEXTO LEGAL DINÁMICO
+// ==========================================
+
+function updateLegalText() {
+
+  const inputTutor = document.getElementById('tutor');
+  const inputDNI = document.getElementById('dni_tutor');
+  const inputAlumno = document.getElementById('nombre');
+
+  const legalTutor = document.getElementById('legal_tutor');
+  const legalDNI = document.getElementById('legal_dni');
+  const legalAlumno = document.getElementById('legal_alumno');
+
+  if (inputTutor && legalTutor) {
+    legalTutor.textContent =
+      inputTutor.value.trim() || '________________________________________';
+  }
+
+  if (inputDNI && legalDNI) {
+    legalDNI.textContent =
+      inputDNI.value.trim() || '________________';
+  }
+
+  if (inputAlumno && legalAlumno) {
+    legalAlumno.textContent =
+      inputAlumno.value.trim() || '________________________________________';
+  }
+}
+
+
+// ==========================================
+// 6. HORARIOS DE LAS DISCIPLINAS
+// ==========================================
+
 const horariosMap = {
-  // Gimnasia Rítmica
+
   "Ritmica - Peque Danza": "Lunes y Miércoles de 17:00 a 18:00",
   "Ritmica - Grupo Basico": "Martes y Jueves de 17:00 a 18:00",
   "Ritmica - Grupo Intermedio": "Lunes y Miércoles de 18:00 a 19:00",
@@ -1612,17 +1633,17 @@ const horariosMap = {
   "Ritmica - Grupo Avanzado": "Lunes y Miércoles de 19:00 a 20:00",
   "Ritmica - Adultos": "Martes y Jueves de 19:00 a 20:00 / Sábados de 10:00 a 12:00",
 
-  // Baile Moderno y Contemporáneo
   "Moderno - Grupo Basico": "Lunes y Miércoles de 18:00 a 19:00",
   "Moderno - Grupo Intermedio": "Martes y Jueves de 18:00 a 19:00",
   "Moderno - Grupo Avanzado": "Martes y Jueves de 19:00 a 20:00",
   "Moderno - Adultos": "Sábados de 10:00 a 12:00",
   "Moderno - Contemporaneo Basico": "Lunes y Miércoles de 19:00 a 20:00",
   "Moderno - Contemporaneo Avanzado": "Viernes de 18:00 a 20:00"
+
 };
 
-// Función que se ejecuta con el onchange del select
 function actualizarHorario() {
+
   const select = document.getElementById('disciplina');
   const box = document.getElementById('box-horario-asignado');
   const inputHidden = document.getElementById('horario_asignado_input');
@@ -1632,23 +1653,164 @@ function actualizarHorario() {
   const valor = select.value;
 
   if (valor && horariosMap[valor]) {
+
     const horarioTexto = horariosMap[valor];
-    box.innerHTML = '<strong>📅 Días y Horarios:</strong> ' + horarioTexto;
+
+    box.innerHTML =
+      '<strong>📅 Días y Horarios:</strong> ' + horarioTexto;
+
     if (inputHidden) inputHidden.value = horarioTexto;
+
   } else {
-    box.innerHTML = 'Selecciona un grupo/nivel arriba para consultar los días y horas.';
+
+    box.innerHTML =
+      'Selecciona un grupo/nivel arriba para consultar los días y horas.';
+
     if (inputHidden) inputHidden.value = '';
+
   }
 }
 
-// Escuchador adicional para asegurar funcionamiento en cualquier navegador o móvil
-document.addEventListener('DOMContentLoaded', function () {
+
+// ==========================================
+// 7. NOTIFICACIÓN DE INSCRIPCIÓN ANUAL
+// ==========================================
+
+function cerrarNotificacion() {
+
+  const notificacion =
+    document.getElementById('notificacionExito');
+
+  if (notificacion) {
+    notificacion.classList.remove('show');
+  }
+
+}
+
+
+// ==========================================
+// 8. INICIALIZACIÓN Y FORMULARIO ANUAL
+// ==========================================
+
+document.addEventListener('DOMContentLoaded', function() {
+
+  updateLegalText();
+
+  // Actualizar horarios
   const selectDisciplina = document.getElementById('disciplina');
+
   if (selectDisciplina) {
     selectDisciplina.addEventListener('change', actualizarHorario);
     selectDisciplina.addEventListener('input', actualizarHorario);
   }
+
+  // Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js');
+  }
+
+  // Instalación de la aplicación
+  let deferredPrompt;
+
+  const installBtn = document.getElementById('installAppBtn');
+
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    if (installBtn) {
+      installBtn.style.display = 'inline-block';
+    }
+  });
+
+  if (installBtn) {
+    installBtn.addEventListener('click', async function() {
+
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+
+        const { outcome } = await deferredPrompt.userChoice;
+
+        if (outcome === 'accepted') {
+          installBtn.style.display = 'none';
+        }
+
+        deferredPrompt = null;
+      }
+
+    });
+  }
+
+  // Formulario anual
+  const form = document.getElementById('formInscripcion');
+  const notificacion = document.getElementById('notificacionExito');
+
+  if (form) {
+
+    form.addEventListener('submit', function(e) {
+
+      e.preventDefault();
+
+      const btnSubmit = form.querySelector('button[type="submit"]');
+
+      if (!btnSubmit) return;
+
+      const textoOriginal = btnSubmit.innerHTML;
+
+      btnSubmit.innerHTML = 'Enviando...';
+      btnSubmit.disabled = true;
+
+      const formData = new FormData(form);
+
+      fetch(form.action, {
+        method: 'POST',
+        body: formData
+      })
+
+      .then(response => {
+
+        if (!response.ok) {
+          throw new Error('Error al enviar la inscripción anual.');
+        }
+
+        if (notificacion) {
+
+          notificacion.classList.add('show');
+
+          setTimeout(() => {
+            notificacion.classList.remove('show');
+          }, 6000);
+
+        }
+
+        form.reset();
+        updateLegalText();
+
+      })
+
+      .catch(error => {
+
+        console.error(error);
+
+        alert(
+          'Hubo un problema al enviar el formulario. Por favor, inténtalo de nuevo.'
+        );
+
+      })
+
+      .finally(() => {
+
+        btnSubmit.innerHTML = textoOriginal;
+        btnSubmit.disabled = false;
+
+      });
+
+    });
+
+  }
+
 });
+
 </script>
-</body>
-</html>
+<!-- FIN SCRIPTS JAVASCRIPT DANZA CASTALLA -->
+
