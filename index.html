@@ -1401,6 +1401,7 @@
 
   // ACTUALIZAR DÍAS DEL CAMPUS
   
+
 function actualizarDiasCampus() {
   const modalidad = document.getElementById('campus_modalidad').value;
   const cajaDias = document.getElementById('campus_dias_box');
@@ -1408,10 +1409,18 @@ function actualizarDiasCampus() {
     '#campus_dias_box input[type="checkbox"]'
   );
 
-  if (modalidad === 'Días sueltos') {
-    cajaDias.hidden = false;
-  } else {
-    cajaDias.hidden = true;
+  const mostrarDias = modalidad === 'Días sueltos';
+
+  cajaDias.hidden = !mostrarDias;
+
+  if (!mostrarDias) {
+    checks.forEach(check => {
+      check.checked = false;
+    });
+  }
+
+  actualizarPrecioCampus();
+}
 
     // Limpiar los días seleccionados al cambiar de modalidad
     checks.forEach(check => {
